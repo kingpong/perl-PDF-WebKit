@@ -1,0 +1,6 @@
+Revision history for Perl extension PDF::WebKit.
+
+0.01  Wed May 18 18:24:45 2011
+	- original version; created by h2xs 1.23 with options
+		-A -X -n PDF::WebKit
+
