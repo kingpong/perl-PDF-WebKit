@@ -1,5 +1,5 @@
 Changes
-Makefile.PL
+Build.PL
 MANIFEST
 README
 t/PDF-WebKit.t
