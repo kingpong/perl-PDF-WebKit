@@ -5,6 +5,8 @@ use warnings;
 use Carp ();
 use IPC::Open2 ();
 
+use PDF::WebKit::Source;
+
 our $VERSION = 0.5.0;
 
 our %Default_Options;
@@ -61,7 +63,7 @@ sub command {
     push @args, '-';  # Get HTML from stdin
   }
   else {
-    push @args, $self->source->as_string;
+    push @args, $self->source->string;
   }
 
   push @args, $path || '-'; # write to file or stdout
@@ -141,12 +143,12 @@ sub _append_stylesheets {
   my $styles = join "", map { $self->style_tag_for($_) } @{$self->stylesheets};
   return unless length($styles) > 0;
 
-  my $body = $self->source->as_string;
+  my $body = $self->source->string;
   if (not $body =~ s{(?=</head>)}{$styles}) {
     $body = $styles . $body;
   }
 
-  $self->source->set_string($body);
+  $self->source->string($body);
 }
 
 sub _normalize_options {
