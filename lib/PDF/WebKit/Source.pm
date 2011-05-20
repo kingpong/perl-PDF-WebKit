@@ -32,6 +32,11 @@ sub is_html {
   return ref($self->string) eq 'SCALAR';
 }
 
+sub content {
+  my $self = shift;
+  return ref($self->string) ? ${$self->string} : $self->string;
+}
+
 no Moose;
 __PACKAGE__->meta->make_immutable;
 

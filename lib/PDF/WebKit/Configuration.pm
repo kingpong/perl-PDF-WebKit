@@ -48,7 +48,7 @@ sub configure {
   my $class = shift;
   my $code = shift;
   local $_ = $class->configuration;
-  $code($_);
+  $code->($_);
 }
 
 1;

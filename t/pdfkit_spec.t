@@ -11,24 +11,23 @@ describe "PDF::WebKit" => sub {
 
   describe "initialization" => sub {
 
-    it "should accept HTML as the source" => sub {
-      my $pdfkit = PDF::WebKit->new('<h1>Oh Hai</h1>');
+    it "should accept HTML as the source when the source is a scalar reference" => sub {
+      my $pdfkit = PDF::WebKit->new(\'<h1>Oh Hai</h1>');
       ok($pdfkit->source->is_html &&
-         $pdfkit->source->as_string eq '<h1>Oh Hai</h1>');
+         $pdfkit->source->content eq '<h1>Oh Hai</h1>');
     };
 
     it "should accept a URL as the source" => sub {
       my $pdfkit = PDF::WebKit->new('http://google.com');
       ok($pdfkit->source->is_url &&
-         $pdfkit->source->as_string eq 'http://google.com');
+         $pdfkit->source->content eq 'http://google.com');
     };
 
     it "should accept a File as the source" => sub {
       my $file_path = File::Spec->catfile($SPEC_ROOT,'fixtures','example.html');
-      open(my $IO, "<", $file_path) || die $!;
-      my $pdfkit = PDF::WebKit->new($IO);
+      my $pdfkit = PDF::WebKit->new($file_path);
       ok($pdfkit->source->is_file &&
-         $pdfkit->source->as_string eq $IO->fileno);
+         $pdfkit->source->content eq $file_path);
     };
 
     it "should parse the options into a cmd line friendly format" => sub {
