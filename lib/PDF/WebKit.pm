@@ -4,14 +4,12 @@ use strict;
 use warnings;
 use Carp ();
 use IPC::Open2 ();
+use Readonly;
 
+use PDF::WebKit::Configuration;
 use PDF::WebKit::Source;
 
 our $VERSION = 0.5.0;
-
-our %Default_Options;
-our $Wkhtmltopdf;
-our $Meta_Tag_Prefix = 'pdf-webkit-';
 
 use Moose;
 
@@ -40,16 +38,20 @@ sub BUILD {
   $self->stylesheets( [] );
 
   my %options;
-  %options = ( %Default_Options, %{ $args->{options} } );
+  %options = ( %{ $self->configuration->default_options }, %{ $args->{options} } );
   %options = ( %options, $self->_find_options_in_meta($args->{source}) ) unless $self->source->is_url;
   %options = $self->_normalize_options(%options);
   $self->_set_options(\%options);
 
-  if (not -e $Wkhtmltopdf) {
-    my $msg = "No wkhtmltopdf executable found at $Wkhtmltopdf\n";
+  if (not -e $self->configuration->wkhtmltopdf) {
+    my $msg = "No wkhtmltopdf executable found\n";
     $msg   .= ">> Please install wkhtmltopdf - https://github.com/jdpace/PDFKit/wiki/Installing-WKHTMLTOPDF";
     die $msg;
   }
+}
+
+sub configuration {
+  PDF::WebKit::Configuration->configuration
 }
 
 sub command {
@@ -73,7 +75,7 @@ sub command {
 
 sub executable {
   my $self = shift;
-  my $default = $Wkhtmltopdf;
+  my $default = $self->configuration->wkhtmltopdf;
   return $default if $default !~ /^\//; # it's not a path, so nothing we can do
   if (-e $default) {
     return $default;
@@ -91,7 +93,7 @@ sub to_pdf {
   my @args = $self->command($path);
   IPC::Open2::open2(my $PDF_OUT, my $PDF_IN, @args)
     || die "can't execute $args[0]: $!";
-  print {$PDF_IN} $self->source->to_s if $self->source->is_html;
+  print {$PDF_IN} $self->source->string if $self->source->is_html;
   close($PDF_IN) || die $!;
   my $result = do { local $/; <$PDF_OUT> };
   if ($path) {
@@ -115,8 +117,9 @@ sub to_file {
 sub _find_options_in_meta {
   my ($self,$body) = @_;
   my %options;
+  my $prefix = $self->configuration->meta_tag_prefix;
   for my $pair ($self->_pdf_webkit_meta_tags($body)) {
-    (my $name = $pair->{name}) =~ s{^$Meta_Tag_Prefix}{}s;
+    (my $name = $pair->{name}) =~ s{^\Q$prefix}{}s;
     $options{$name} = $pair->{value};
   }
   return %options;
@@ -124,6 +127,7 @@ sub _find_options_in_meta {
 
 sub _pdf_webkit_meta_tags {
   my ($self,$body) = @_;
+  my $prefix = $self->configuration->meta_tag_prefix;
   # TODO: parse html document and return those that match $Meta_Tag_Prefix
   return ();  # { name => x, value => y } x 0..INF
 }
@@ -153,9 +157,9 @@ sub _append_stylesheets {
 
 sub _normalize_options {
   my $self = shift;
+  my %orig_options = @_;
   my %normalized_options;
-  my $orig_options = $self->options;
-  while (my ($key,$val) = %$orig_options) {
+  while (my ($key,$val) = each %orig_options) {
     next unless defined($val) && length($val);
     my $normalized_key = "--" . $self->_normalize_arg($key);
     $normalized_options{$normalized_key} = $self->_normalize_value($val);
@@ -170,7 +174,7 @@ sub _normalize_arg {
   return $arg;
 }
 
-sub normalize_value {
+sub _normalize_value {
   my ($self,$value) = @_;
   if (defined($value) && ($value eq 'yes' || $value eq 'YES')) {
     return undef;
