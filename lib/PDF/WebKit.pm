@@ -65,7 +65,7 @@ sub command {
     push @args, '-';  # Get HTML from stdin
   }
   else {
-    push @args, $self->source->string;
+    push @args, $self->source->content;
   }
 
   push @args, $path || '-'; # write to file or stdout
@@ -93,7 +93,7 @@ sub to_pdf {
   my @args = $self->command($path);
   IPC::Open2::open2(my $PDF_OUT, my $PDF_IN, @args)
     || die "can't execute $args[0]: $!";
-  print {$PDF_IN} $self->source->string if $self->source->is_html;
+  print {$PDF_IN} $self->source->content if $self->source->is_html;
   close($PDF_IN) || die $!;
   my $result = do { local $/; <$PDF_OUT> };
   if ($path) {
@@ -143,16 +143,15 @@ sub _append_stylesheets {
   if (@{ $self->stylesheets } && !$self->source->is_html) {
     Carp::croak "stylesheets may only be added to an HTML source";
   }
+  return unless $self->source->is_html;
 
   my $styles = join "", map { $self->style_tag_for($_) } @{$self->stylesheets};
   return unless length($styles) > 0;
 
-  my $body = $self->source->string;
-  if (not $body =~ s{(?=</head>)}{$styles}) {
-    $body = $styles . $body;
+  my $htmlref = $self->source->string;
+  if (not $$htmlref =~ s{(?=</head>)}{$styles}) {
+    $$htmlref = $styles . $$htmlref;
   }
-
-  $self->source->string($body);
 }
 
 sub _normalize_options {
