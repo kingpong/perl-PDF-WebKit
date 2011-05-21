@@ -65,7 +65,7 @@ describe "PDF::WebKit" => sub {
 
   };
 
-  describe "command" => sub {
+  describe "->command" => sub {
     it "should construct the correct command" => sub {
       my $pdfkit = PDF::WebKit->new(\'html', page_size => 'Letter', toc_l1_font_size => 12);
       my @command = $pdfkit->command;
@@ -144,87 +144,3 @@ describe "PDF::WebKit" => sub {
 
 runtests unless caller;
 
-__END__
-
-
-describe PDFKit do
-
-  context "#to_pdf" => sub {
-    it "should generate a PDF of the HTML" => sub {
-      pdfkit = PDF::WebKit->new('html', :page_size => 'Letter')
-      pdf = pdfkit.to_pdf
-      pdf[0...4].should == "%PDF" # PDF Signature at beginning of file
-    };
-
-    it "should generate a PDF with a numerical parameter" => sub {
-      pdfkit = PDF::WebKit->new('html', :header_spacing => 1)
-      pdf = pdfkit.to_pdf
-      pdf[0...4].should == "%PDF" # PDF Signature at beginning of file
-    };
-
-    it "should generate a PDF with a symbol parameter" => sub {
-      pdfkit = PDF::WebKit->new('html', :page_size => :Letter)
-      pdf = pdfkit.to_pdf
-      pdf[0...4].should == "%PDF" # PDF Signature at beginning of file
-    };
-
-    it "should have the stylesheet added to the head if it has one" => sub {
-      pdfkit = PDF::WebKit->new("<html><head></head><body>Hai!</body></html>")
-      css = File.join(SPEC_ROOT,'fixtures','example.css')
-      pdfkit.stylesheets << css
-      pdfkit.to_pdf
-      pdfkit.source.to_s.should include("<style>#{File.read(css)}</style>")
-    };
-
-    it "should prepend style tags if the HTML doesn't have a head tag" => sub {
-      pdfkit = PDF::WebKit->new("<html><body>Hai!</body></html>")
-      css = File.join(SPEC_ROOT,'fixtures','example.css')
-      pdfkit.stylesheets << css
-      pdfkit.to_pdf
-      pdfkit.source.to_s.should include("<style>#{File.read(css)}</style><html>")
-    };
-
-    it "should throw an error if the source is not html and stylesheets have been added" => sub {
-      pdfkit = PDF::WebKit->new('http://google.com')
-      css = File.join(SPEC_ROOT,'fixtures','example.css')
-      pdfkit.stylesheets << css
-      lambda { pdfkit.to_pdf }.should raise_error(PDFKit::ImproperSourceError)
-    };
-  };
-
-  context "#to_file" => sub {
-    before => sub {
-      @file_path = File.join(SPEC_ROOT,'fixtures','test.pdf')
-      File.delete(@file_path) if File.exist?(@file_path)
-    };
-
-    after => sub {
-      File.delete(@file_path)
-    };
-
-    it "should create a file with the PDF as content" => sub {
-      pdfkit = PDF::WebKit->new('html', :page_size => 'Letter')
-      file = pdfkit.to_file(@file_path)
-      file.should be_instance_of(File)
-      File.read(file.path)[0...4].should == "%PDF" # PDF Signature at beginning of file
-    };
-  };
-
-  context "security" => sub {
-    before => sub {
-      @test_path = File.join(SPEC_ROOT,'fixtures','security-oops')
-      File.delete(@test_path) if File.exist?(@test_path)
-    };
-
-    after => sub {
-      File.delete(@test_path) if File.exist?(@test_path)
-    };
-
-    it "should not allow shell injection in options" => sub {
-      pdfkit = PDF::WebKit->new('html', :header_center => "a title\"; touch #{@test_path} #")
-      pdfkit.to_pdf
-      File.exist?(@test_path).should be_false
-    };
-  };
-
-};

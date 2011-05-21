@@ -13,7 +13,7 @@ around 'BUILDARGS' => sub {
   return $self->$orig({
     meta_tag_prefix => 'pdf-webkit-',
     default_options => {
-      disable_smart_shrinking => 0,
+      disable_smart_shrinking => undef,
       page_size => 'Letter',
       margin_top => '0.75in',
       margin_right => '0.75in',

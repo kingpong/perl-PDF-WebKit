@@ -3,6 +3,7 @@ use 5.008008;
 use strict;
 use warnings;
 use Carp ();
+use IO::File ();
 use IPC::Open2 ();
 use Readonly;
 
@@ -91,8 +92,11 @@ sub to_pdf {
 
   $self->_append_stylesheets;
   my @args = $self->command($path);
-  IPC::Open2::open2(my $PDF_OUT, my $PDF_IN, @args)
-    || die "can't execute $args[0]: $!";
+  my ($PDF_OUT,$PDF_IN);
+  eval { IPC::Open2::open2($PDF_OUT, $PDF_IN, join(" ", @args)) };
+  if ($@) {
+    die "can't execute $args[0]: $!";
+  }
   print {$PDF_IN} $self->source->content if $self->source->is_html;
   close($PDF_IN) || die $!;
   my $result = do { local $/; <$PDF_OUT> };
@@ -100,7 +104,7 @@ sub to_pdf {
     $result = do { local (@ARGV,$/) = ($path); <> };
   }
 
-  if ($result !~ /\S/) {
+  if (not (defined($result) && length($result))) {
     Carp::croak "command failed: $args[0]";
   }
   return $result;
@@ -110,7 +114,9 @@ sub to_file {
   my $self = shift;
   my $path = shift;
   $self->to_pdf($path);
-  open(my $FH, "<", $path) || Carp::croak "can't open '$path': $!";
+  my $FH = IO::File->new($path,"<")
+    || Carp::croak "can't open '$path': $!";
+  $FH->binmode();
   return $FH;
 }
 
@@ -148,10 +154,13 @@ sub _append_stylesheets {
   my $styles = join "", map { $self->style_tag_for($_) } @{$self->stylesheets};
   return unless length($styles) > 0;
 
-  my $htmlref = $self->source->string;
-  if (not $$htmlref =~ s{(?=</head>)}{$styles}) {
-    $$htmlref = $styles . $$htmlref;
+  # can't modify in-place, because the source might be a reference to a
+  # read-only constant string literal
+  my $html = $self->source->content;
+  if (not ($html =~ s{(?=</head>)}{$styles})) {
+    $html = $styles . $html;
   }
+  $self->source->string(\$html);
 }
 
 sub _normalize_options {
