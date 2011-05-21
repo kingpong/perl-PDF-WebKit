@@ -7,7 +7,8 @@ use File::Spec;
 
 BEGIN { require File::Spec->catfile(dirname(__FILE__), "spec_helper.pl") }
 
-if (! -x PDF::WebKit::Configuration->configuration->wkhtmltopdf) {
+my $executable = PDF::WebKit::Configuration->configuration->wkhtmltopdf;
+if (not ($executable && -x $executable)) {
   plan skip_all => "wkhtmltopdf not available (make sure it's in your path)";
 }
 
