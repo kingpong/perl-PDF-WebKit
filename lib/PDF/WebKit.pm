@@ -5,7 +5,6 @@ use warnings;
 use Carp ();
 use IO::File ();
 use IPC::Open2 ();
-use Readonly;
 
 use PDF::WebKit::Configuration;
 use PDF::WebKit::Source;
