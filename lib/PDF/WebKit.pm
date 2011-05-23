@@ -9,9 +9,8 @@ use IPC::Open2 ();
 use PDF::WebKit::Configuration;
 use PDF::WebKit::Source;
 
-# use decimal versioning to support extutils, with enough digits to
-# (hopefully) match PDFKit's versioning.
-our $VERSION = 0.500;
+# should roughly coincide with PDFKit versions
+our $VERSION = 0.5;
 
 use Moose;
 
