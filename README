@@ -21,6 +21,10 @@ This module requires these other modules and libraries:
   * Moose
   * XML::LibXML (recommended)
 
+To run the tests, you'll need:
+
+  * Test::Spec
+
 COPYRIGHT AND LICENCE
 
 Copyright (C) 2011 by Informatics Corporation of America.
