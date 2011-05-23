@@ -10,7 +10,9 @@ use Readonly;
 use PDF::WebKit::Configuration;
 use PDF::WebKit::Source;
 
-our $VERSION = 0.5.0;
+# use decimal versioning to support extutils, with enough digits to
+# (hopefully) match PDFKit's versioning.
+our $VERSION = 0.500;
 
 use Moose;
 
