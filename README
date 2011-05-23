@@ -5,6 +5,10 @@ Use WebKit to Generate PDFs from HTML (via wkhtmltopdf)
 
   my $pdf = PDF::WebKit->new('http://www.google.com/')->to_pdf;
 
+HOMEPAGE
+
+http://github.com/kingpong/perl-PDF-WebKit
+
 INSTALLATION
 
 To install this module type the following:

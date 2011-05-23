@@ -332,6 +332,13 @@ L<WKHTMLTOPDF|http://search.cpan.org/~tbr/WKHTMLTOPDF-0.02/lib/WKHTMLTOPDF.pm>
 
 Philip Garrett <philip.garrett@icainformatics.com>
 
+=head1 CONTRIBUTING
+
+If you'd like to contribute, just fork my repository on Github, commit
+your changes and send me a pull request.
+
+http://github.com/kingpong/perl-PDF-WebKit
+
 =head1 ACKNOWLEDGMENTS
 
 This code is nearly a line-by-line port of Jared Pace's PDFKit.
