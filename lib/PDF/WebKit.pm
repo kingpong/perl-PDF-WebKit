@@ -41,7 +41,7 @@ sub BUILD {
 
   my %options;
   %options = ( %{ $self->configuration->default_options }, %{ $args->{options} } );
-  %options = ( %options, $self->_find_options_in_meta($args->{source}) ) unless $self->source->is_url;
+  %options = ( %options, $self->_find_options_in_meta($self->source) ) unless $self->source->is_url;
   %options = $self->_normalize_options(%options);
   $self->_set_options(\%options);
 
@@ -122,21 +122,35 @@ sub to_file {
 }
 
 sub _find_options_in_meta {
-  my ($self,$body) = @_;
-  my %options;
-  my $prefix = $self->configuration->meta_tag_prefix;
-  for my $pair ($self->_pdf_webkit_meta_tags($body)) {
-    (my $name = $pair->{name}) =~ s{^\Q$prefix}{}s;
-    $options{$name} = $pair->{value};
-  }
-  return %options;
+  my ($self,$source) = @_;
+  # if we can't parse for whatever reason, keep calm and carry on.
+  my @result = eval { $self->_pdf_webkit_meta_tags($source) };
+  return $@ ? () : @result;
 }
 
 sub _pdf_webkit_meta_tags {
-  my ($self,$body) = @_;
+  my ($self,$source) = @_;
+  return () unless eval { require XML::LibXML };
+
   my $prefix = $self->configuration->meta_tag_prefix;
-  # TODO: parse html document and return those that match $Meta_Tag_Prefix
-  return ();  # { name => x, value => y } x 0..INF
+  my $parser = XML::LibXML->new(
+    recover => 2,
+    suppress_errors => 1,
+    suppress_warnings => 1,
+    no_network => 1,
+  );
+  my $doc = $source->is_html ? $parser->parse_html_string($source->content)
+          : $source->is_file ? $parser->parse_html_file($source->string)
+          : return ();
+
+  my %meta;
+  for my $node ($doc->findnodes('html/head/meta')) {
+    my $name = $node->getAttribute('name');
+    next unless ($name && ($name =~ s{^\Q$prefix}{}s));
+    $meta{$name} = $node->getAttribute('content');
+  }
+
+  return %meta;
 }
 
 sub style_tag_for {
@@ -207,23 +221,3 @@ PDF::WebKit - Use WebKit to Generate PDFs from HTML (via wkhtmltopdf)
 =head1 DESCRIPTION
 
 =cut
-
-__END__
-
-class PDFKit
-
-  protected
-
-    def pdfkit_meta_tags(body)
-      require 'rexml/document'
-      xml_body = REXML::Document.new(body)
-      found = []
-      xml_body.elements.each("html/head/meta") do |tag|
-        found << tag if tag.attributes['name'].to_s =~ /^#{PDFKit.configuration.meta_tag_prefix}/
-      end
-      found
-    rescue # rexml random crash on invalid xml
-      []
-    end
-
-end

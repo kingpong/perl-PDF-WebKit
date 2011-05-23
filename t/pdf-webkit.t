@@ -123,21 +123,25 @@ describe "PDF::WebKit" => sub {
       is($command[-1], qq{"$file_path"});
     };
 
-#    it "should detect special pdf-webkit meta tags" => sub {
-#      local $TODO = 1;
-#      my $body = q{
-#        <html>
-#          <head>
-#            <meta name="pdfkit-page_size" content="Legal"/>
-#            <meta name="pdfkit-orientation" content="Landscape"/>
-#          </head>
-#        </html>
-#      };
-#      my $pdfkit = PDF::WebKit->new(\$body);
-#      my @command = $pdfkit->command;
-#      is( $command[ index_of('"--page-size"',@command) + 1 ], '"Legal"' );
-#      is( $command[ index_of('"--orientation"',@command) + 1 ], '"Landscape"' );
-#    };
+    SKIP: {
+      skip "XML::LibXML is unavailable", 2
+        unless eval { require XML::LibXML };
+
+      it "should detect special pdf-webkit meta tags" => sub {
+        my $body = q{
+          <html>
+            <head>
+              <meta name="pdf-webkit-page_size" content="Legal"/>
+              <meta name="pdf-webkit-orientation" content="Landscape"/>
+            </head>
+          </html>
+        };
+        my $pdfkit = PDF::WebKit->new(\$body);
+        my @command = $pdfkit->command;
+        is( $command[ index_of('"--page-size"',@command) + 1 ], '"Legal"' );
+        is( $command[ index_of('"--orientation"',@command) + 1 ], '"Landscape"' );
+      };
+    }
   };
 
 };

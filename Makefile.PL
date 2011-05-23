@@ -9,6 +9,7 @@ license 'perl';
 
 # Specific dependencies
 requires 'Moose';
+recommends 'XML::LibXML';
 test_requires 'Test::Spec';
 
 # Create Makefile
