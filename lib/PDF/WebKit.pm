@@ -218,6 +218,31 @@ PDF::WebKit - Use WebKit to Generate PDFs from HTML (via wkhtmltopdf)
 
 =head1 SYNOPSIS
 
+  use PDF::WebKit;
+
+  # PDF::WebKit->new takes the HTML and any options for wkhtmltopdf
+  # run `wkhtmltopdf --extended-help` for a full list of options
+  my $kit = PDF::WebKit->new(\$html, page_size => 'Letter');
+  push @{ $kit->stylesheets }, "/path/to/css/file";
+
+  # Get an inline PDF
+  my $pdf = $kit->to_pdf;
+
+  # save the PDF to a file
+  my $file = $kit->to_file('/path/to/save/pdf');
+
+  # PDF::WebKit can optionally accept a URL or a File
+  # Stylesheets cannot be added when source is provided as a URL or File.
+  my $kit = PDF::WebKit->new('http://google.com');
+  my $kit = PDF::WebKit->new('/path/to/html');
+
+  # Add any kind of option through meta tags
+  my $kit = PDF::WebKit->new(\'<html><head><meta name="pdfkit-page_size" content="Letter"...');
+
 =head1 DESCRIPTION
+
+PDF::WebKit uses L<wkhtmltopdf|> to convert HTML documents into PDFs. It
+is a port of the wonderful L<PDFKit|https://github.com/jdpace/PDFKit>
+Ruby library.
 
 =cut
