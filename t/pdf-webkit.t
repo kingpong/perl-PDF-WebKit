@@ -13,7 +13,7 @@ my $wkhtmltopdf = File::Spec->catfile($SPEC_ROOT,'fixtures','mock_wkhtmltopdf');
 describe "PDF::WebKit" => sub {
 
   before all => sub {
-    PDF::WebKit::Configuration->configure(sub {
+    PDF::WebKit->configure(sub {
       $_->wkhtmltopdf($wkhtmltopdf);
     });
   };
@@ -78,7 +78,7 @@ describe "PDF::WebKit" => sub {
     };
 
     it "will not include default options it is told to omit" => sub {
-      PDF::WebKit::Configuration->configure(sub {
+      PDF::WebKit->configure(sub {
         $_->default_options->{disable_smart_shrinking} = 'yes';
       });
       my $pdfkit = PDF::WebKit->new(\'html');

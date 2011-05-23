@@ -56,10 +56,15 @@ sub configuration {
   PDF::WebKit::Configuration->configuration
 }
 
+sub configure {
+  my $class = shift;
+  $class->configuration->configure(@_);
+}
+
 sub command {
   my $self = shift;
   my $path = shift;
-  my @args = ( $self->executable );
+  my @args = ( $self->_executable );
   push @args, %{ $self->options };
   push @args, '--quiet';
   
@@ -75,7 +80,7 @@ sub command {
   return map { s/"/\\"/g; qq{"$_"} } grep { defined($_) } @args;
 }
 
-sub executable {
+sub _executable {
   my $self = shift;
   my $default = $self->configuration->wkhtmltopdf;
   return $default if $default !~ /^\//; # it's not a path, so nothing we can do
@@ -153,7 +158,7 @@ sub _pdf_webkit_meta_tags {
   return %meta;
 }
 
-sub style_tag_for {
+sub _style_tag_for {
   my ($self,$stylesheet) = @_;
   my $styles = do { local (@ARGV,$/) = ($stylesheet); <> };
   return "<style>$styles</style>";
@@ -166,7 +171,7 @@ sub _append_stylesheets {
   }
   return unless $self->source->is_html;
 
-  my $styles = join "", map { $self->style_tag_for($_) } @{$self->stylesheets};
+  my $styles = join "", map { $self->_style_tag_for($_) } @{$self->stylesheets};
   return unless length($styles) > 0;
 
   # can't modify in-place, because the source might be a reference to a
@@ -241,8 +246,104 @@ PDF::WebKit - Use WebKit to Generate PDFs from HTML (via wkhtmltopdf)
 
 =head1 DESCRIPTION
 
-PDF::WebKit uses L<wkhtmltopdf|> to convert HTML documents into PDFs. It
-is a port of the wonderful L<PDFKit|https://github.com/jdpace/PDFKit>
-Ruby library.
+PDF::WebKit uses L<wkhtmltopdf|http://code.google.com/p/wkhtmltopdf/> to
+convert HTML documents into PDFs. It is a port of the elegant
+L<PDFKit|https://github.com/jdpace/PDFKit> Ruby library.
+
+wkhtmltopdf generates beautiful PDFs by leveraging the rendering power
+of Qt's WebKit browser engine (used by both Apple Safari and Google
+Chrome browsers).
+
+=head2 Configuration
+
+Configuration of PDF::WebKit is configured globally by calling the
+C<PDF::WebKit->configure> class method:
+
+  PDF::WebKit->configure(sub {
+    # default `which wkhtmltopdf`
+    $_->wkhtmltopdf('/path/to/wkhtmltopdf');
+
+    # default 'pdf-webkit-'
+    $_->meta_tag_prefix('my-prefix-');
+
+    $_->default_options->{'--orientation'} = 'Portrait';
+  });
+
+See the L<new|/Constructor> method for the standard default options.
+
+=head2 Constructor
+
+=over 4
+
+=item new($SOURCE_URL,%OPTIONS)
+
+=item new($SOURCE_FILENAME,%OPTIONS)
+
+=item new(\$SOURCE_HTML,%OPTIONS)
+
+Creates and returns a new instance. If the first parameter looks like a
+URL, it is treated as a URL and handed off to wkhtmltopdf verbatim. If
+it is is a reference to a scalar, it is an HTML document body.
+Otherwise, the parameter is interpreted as a filename.
+
+The %OPTIONS hash is a list of name/value pairs for command-line
+options to wkhtmltopdf. These options can augment or override the
+default options. For options with no associated value, pass C<undef> as
+the value.
+
+The default options are:
+
+  --page-size     Letter
+  --margin-top    0.75in
+  --margin_right  0.75in
+  --margin_bottom 0.75in
+  --margin_left   0.75in
+  --encoding      UTF-8
+
+=back
+
+=head2 Methods
+
+=over 4
+
+=item command
+
+Returns the list of command-line arguments that would be used to execute
+wkhtmltopdf.
+
+=item to_pdf
+
+Processes the source material and returns a PDF as a string.
+
+=item to_file($PATH)
+
+Processes the source material and creates a PDF at C<$PATH>. Returns a
+filehandle opened on C<$PATH>.
+
+back
+
+=head1 SEE ALSO
+
+L<PDFKit|https://github.com/jdpace/PDFKit>,
+L<wkhtmltopdf|http://code.google.com/p/wkhtmltopdf/>,
+L<WKHTMLTOPDF|http://search.cpan.org/~tbr/WKHTMLTOPDF-0.02/lib/WKHTMLTOPDF.pm>
+(a lower-level wrapper for wkhtmltopdf).
+
+=head1 AUTHOR
+
+Philip Garrett <philip.garrett@icainformatics.com>
+
+=head1 ACKNOWLEDGMENTS
+
+This code is nearly a line-by-line port of Jared Pace's PDFKit.
+https://github.com/jdpace/PDFKit
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright (c) 2011 by Informatics Corporation of America.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself, either Perl version 5.8.8 or,
+at your option, any later version of Perl 5 you may have available.
 
 =cut
