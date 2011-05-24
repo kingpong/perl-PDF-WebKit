@@ -1,5 +1,9 @@
 Revision history for Perl extension PDF::WebKit.
 
+0.7   Tue May 24 19:34:26 2011
+  - Switched from IPC::Open2 to IPC::Run to get correct behavior under
+    mod_perl 2.
+
 0.01  Wed May 18 18:24:45 2011
 	- original version; created by h2xs 1.23 with options
 		-A -X -n PDF::WebKit
