@@ -9,8 +9,7 @@ use IPC::Open2 ();
 use PDF::WebKit::Configuration;
 use PDF::WebKit::Source;
 
-# should roughly coincide with PDFKit versions
-our $VERSION = 0.5;
+our $VERSION = 0.6;
 
 use Moose;
 
