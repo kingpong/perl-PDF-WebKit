@@ -4,12 +4,12 @@ use strict;
 use warnings;
 use Carp ();
 use IO::File ();
-use IPC::Open2 ();
+use IPC::Run ();
 
 use PDF::WebKit::Configuration;
 use PDF::WebKit::Source;
 
-our $VERSION = 0.6;
+our $VERSION = 0.7;
 
 use Moose;
 
@@ -75,7 +75,7 @@ sub command {
 
   push @args, $path || '-'; # write to file or stdout
 
-  return map { s/"/\\"/g; qq{"$_"} } grep { defined($_) } @args;
+  return grep { defined($_) } @args;
 }
 
 sub _executable {
@@ -96,22 +96,20 @@ sub to_pdf {
 
   $self->_append_stylesheets;
   my @args = $self->command($path);
-  my ($PDF_OUT,$PDF_IN);
-  eval { IPC::Open2::open2($PDF_OUT, $PDF_IN, join(" ", @args)) };
-  if ($@) {
-    die "can't execute $args[0]: $!";
-  }
-  print {$PDF_IN} $self->source->content if $self->source->is_html;
-  close($PDF_IN) || die $!;
-  my $result = do { local $/; <$PDF_OUT> };
+
+  my $input = $self->source->is_html ? $self->source->content : undef;
+  my $output;
+
+  IPC::Run::run( \@args, "<", \$input, ">", \$output );
+
   if ($path) {
-    $result = do { local (@ARGV,$/) = ($path); <> };
+    $output = do { local (@ARGV,$/) = ($path); <> };
   }
 
-  if (not (defined($result) && length($result))) {
+  if (not (defined($output) && length($output))) {
     Carp::croak "command failed: $args[0]";
   }
-  return $result;
+  return $output;
 }
 
 sub to_file {
