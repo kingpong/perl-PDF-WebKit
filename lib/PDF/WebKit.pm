@@ -137,14 +137,19 @@ sub _pdf_webkit_meta_tags {
   return () unless eval { require XML::LibXML };
 
   my $prefix = $self->configuration->meta_tag_prefix;
-  my $parser = XML::LibXML->new(
+
+  # these options do not work at the constructor level in XML::LibXML 1.70, so pass
+  # them through to the parser.
+  my %options = (
     recover => 2,
     suppress_errors => 1,
     suppress_warnings => 1,
     no_network => 1,
   );
-  my $doc = $source->is_html ? $parser->parse_html_string($source->content)
-          : $source->is_file ? $parser->parse_html_file($source->string)
+
+  my $parser = XML::LibXML->new();
+  my $doc = $source->is_html ? $parser->parse_html_string($source->content,\%options)
+          : $source->is_file ? $parser->parse_html_file($source->string,\%options)
           : return ();
 
   my %meta;
