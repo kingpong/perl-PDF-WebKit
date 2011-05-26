@@ -141,6 +141,32 @@ describe "PDF::WebKit" => sub {
         is( $command[ index_of('--page-size',@command) + 1 ], 'Legal' );
         is( $command[ index_of('--orientation',@command) + 1 ], 'Landscape' );
       };
+
+      it "should normalize options before combining, so e.g. page-size can override default page_size" => sub {
+        # This test can pass even if the behavior is broken.
+        # I'm not sure how to fix it without converting PDF::WebKit to
+        # use an ordered hash. The hashing order created by this data
+        # set evokes the bug in perl 5.8.9, at least.
+        my $body = q{
+          <html>
+            <head>
+              <meta name="pdf-webkit-page-size" content="Legal"/>
+              <meta name="pdf-webkit-margin-top" content="0"/>
+              <meta name="pdf-webkit-margin-bottom" content="0"/>
+              <meta name="pdf-webkit-margin-left" content="0"/>
+              <meta name="pdf-webkit-margin-right" content="0"/>
+            </head>
+          </html>
+        };
+        my $pdfkit = PDF::WebKit->new(\$body);
+        my @command = $pdfkit->command;
+        is( scalar(grep { /page.*size/ } @command), 1 );
+        is( scalar(grep { /margin.*top/ } @command), 1 );
+        is( scalar(grep { /margin.*bottom/ } @command), 1 );
+        is( $command[ index_of('--page-size',@command) + 1 ], 'Legal' );
+        is( $command[ index_of('--margin-top',@command) + 1 ], '0' );
+        is( $command[ index_of('--margin-bottom',@command) + 1 ], '0' );
+      };
     }
   };
 

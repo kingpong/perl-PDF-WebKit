@@ -9,7 +9,7 @@ use IPC::Run ();
 use PDF::WebKit::Configuration;
 use PDF::WebKit::Source;
 
-our $VERSION = 0.8;
+our $VERSION = 0.9;
 
 use Moose;
 
@@ -34,14 +34,12 @@ sub BUILD {
   my ($self,$args) = @_;
 
   $self->source( PDF::WebKit::Source->new($args->{source}) );
-
   $self->stylesheets( [] );
-
-  my %options;
-  %options = ( %{ $self->configuration->default_options }, %{ $args->{options} } );
-  %options = ( %options, $self->_find_options_in_meta($self->source) ) unless $self->source->is_url;
-  %options = $self->_normalize_options(%options);
-  $self->_set_options(\%options);
+  $self->_set_options({
+    $self->_normalize_options(%{ $self->configuration->default_options }),
+    $self->_normalize_options(%{ $args->{options} }),
+    $self->_normalize_options($self->_find_options_in_meta),
+  });
 
   if (not -e $self->configuration->wkhtmltopdf) {
     my $msg = "No wkhtmltopdf executable found\n";
@@ -62,9 +60,7 @@ sub configure {
 sub command {
   my $self = shift;
   my $path = shift;
-  my @args = ( $self->_executable );
-  push @args, %{ $self->options };
-  push @args, '--quiet';
+  my @args = ( $self->_executable, $self->_prepare_options, '--quiet' );
   
   if ($self->source->is_html) {
     push @args, '-';  # Get HTML from stdin
@@ -123,15 +119,17 @@ sub to_file {
 }
 
 sub _find_options_in_meta {
-  my ($self,$source) = @_;
+  my ($self) = @_;
+  return () if $self->source->is_url;
   # if we can't parse for whatever reason, keep calm and carry on.
-  my @result = eval { $self->_pdf_webkit_meta_tags($source) };
+  my @result = eval { $self->_pdf_webkit_meta_tags };
   return $@ ? () : @result;
 }
 
 sub _pdf_webkit_meta_tags {
-  my ($self,$source) = @_;
+  my ($self) = @_;
   return () unless eval { require XML::LibXML };
+  my $source = $self->source;
 
   my $prefix = $self->configuration->meta_tag_prefix;
 
@@ -184,14 +182,29 @@ sub _append_stylesheets {
   $self->source->string(\$html);
 }
 
+sub _prepare_options {
+  my ($self) = @_;
+  my $options = $self->options;
+  my @args;
+  while (my ($name,$val) = each %$options) {
+    next unless defined($val) && length($val);
+    if ($val eq 'yes' || $val eq 'YES') {
+      push @args, $name;
+    }
+    else {
+      push @args, $name, $val;
+    }
+  }
+  return @args;
+}
+
 sub _normalize_options {
   my $self = shift;
   my %orig_options = @_;
   my %normalized_options;
   while (my ($key,$val) = each %orig_options) {
-    next unless defined($val) && length($val);
     my $normalized_key = "--" . $self->_normalize_arg($key);
-    $normalized_options{$normalized_key} = $self->_normalize_value($val);
+    $normalized_options{$normalized_key} = $val;
   }
   return %normalized_options;
 }
@@ -201,16 +214,6 @@ sub _normalize_arg {
   $arg =~ lc($arg);
   $arg =~ s{[^a-z0-9]}{-}g;
   return $arg;
-}
-
-sub _normalize_value {
-  my ($self,$value) = @_;
-  if (defined($value) && ($value eq 'yes' || $value eq 'YES')) {
-    return undef;
-  }
-  else {
-    return $value;
-  }
 }
 
 no Moose;
