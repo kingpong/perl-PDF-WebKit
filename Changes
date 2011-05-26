@@ -1,5 +1,9 @@
 Revision history for Perl extension PDF::WebKit.
 
+0.8   Thu May 26 17:05:00 2011
+  - Raised required version of XML::LibXML to 1.62 since that is the 
+    first version that allows options to parse_html_string().
+
 0.7   Tue May 24 19:34:26 2011
   - Switched from IPC::Open2 to IPC::Run to get correct behavior under
     mod_perl 2.
