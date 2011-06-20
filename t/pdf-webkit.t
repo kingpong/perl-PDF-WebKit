@@ -1,6 +1,7 @@
 #!perl
 use Test::Spec;
 use utf8;
+no strict;
 
 use File::Basename qw(dirname);
 use File::Spec;
@@ -41,7 +42,12 @@ describe "PDF::WebKit" => sub {
 
     it "should parse the options into a cmd line friendly format" => sub {
       my $pdfkit = PDF::WebKit->new('html', page_size => 'Letter');
-      ok( exists $pdfkit->options->{"--page-size"} );
+      ok( exists $pdfkit->options->{'--page-size'} );
+    };
+
+    it "should replace any and all leading option hyphens with the standard two-hyphen dash" => sub {
+      my $pdfkit = PDF::WebKit->new('html', '-page_size' => 'Letter');
+      ok( exists $pdfkit->options->{'--page-size'} );
     };
 
     it "should provide default options" => sub {

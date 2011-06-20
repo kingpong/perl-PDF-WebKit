@@ -1,6 +1,7 @@
 #!perl
 use Test::Spec;
 use utf8;
+no strict;
 
 use File::Basename qw(dirname);
 use File::Spec;
