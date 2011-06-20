@@ -6,3 +6,5 @@ META.yml
 Makefile
 pm_to_blib
 *.bak
+Makefile.old
+*.tar.gz
