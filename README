@@ -1,4 +1,4 @@
-PDF-WebKit version 0.500
+PDF-WebKit version 0.10
 =======================
 
 Use WebKit to Generate PDFs from HTML (via wkhtmltopdf)
@@ -22,8 +22,9 @@ DEPENDENCIES
 
 This module requires these other modules and libraries:
 
+  * IPC::Run
   * Moose
-  * XML::LibXML (recommended)
+  * XML::LibXML 1.62 (recommended)
 
 To run the tests, you'll need:
 
