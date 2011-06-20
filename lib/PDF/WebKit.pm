@@ -9,7 +9,7 @@ use IPC::Run ();
 use PDF::WebKit::Configuration;
 use PDF::WebKit::Source;
 
-our $VERSION = 0.9;
+our $VERSION = '0.10';
 
 use Moose;
 
