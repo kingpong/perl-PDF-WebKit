@@ -203,7 +203,7 @@ sub _normalize_options {
   my %orig_options = @_;
   my %normalized_options;
   while (my ($key,$val) = each %orig_options) {
-    my $normalized_key = "--" . $self->_normalize_arg($key);
+    my $normalized_key = $self->_normalize_arg($key);
     $normalized_options{$normalized_key} = $val;
   }
   return %normalized_options;
@@ -213,6 +213,7 @@ sub _normalize_arg {
   my ($self,$arg) = @_;
   $arg =~ lc($arg);
   $arg =~ s{[^a-z0-9]}{-}g;
+  $arg =~ s{^-*}{--};
   return $arg;
 }
 
