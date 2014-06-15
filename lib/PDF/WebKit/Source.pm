@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 use Moo;
+use namespace::clean;
 
 has string => ( is => 'rw' );
 

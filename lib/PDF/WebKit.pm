@@ -12,6 +12,7 @@ use PDF::WebKit::Source;
 our $VERSION = '0.91';
 
 use Moo;
+use namespace::clean;
 
 has source      => ( is => 'rw' );
 has stylesheets => ( is => 'rw' );

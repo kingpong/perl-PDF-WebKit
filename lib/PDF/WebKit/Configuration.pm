@@ -2,6 +2,7 @@ package PDF::WebKit::Configuration;
 use strict;
 use warnings;
 use Moo;
+use namespace::clean;
 
 has meta_tag_prefix => ( is => 'rw' );
 has default_options => ( is => 'rw' );
