@@ -11,7 +11,7 @@ use PDF::WebKit::Source;
 
 our $VERSION = '0.91';
 
-use Moose;
+use Moo;
 
 has source      => ( is => 'rw' );
 has stylesheets => ( is => 'rw' );
@@ -216,9 +216,6 @@ sub _normalize_arg {
   $arg =~ s{^-*}{--};
   return $arg;
 }
-
-no Moose;
-__PACKAGE__->meta->make_immutable;
 
 1;
 

@@ -9,7 +9,7 @@ license 'perl';
 
 # Specific dependencies
 requires 'IPC::Run';
-requires 'Moose';
+requires 'Moo';
 recommends 'XML::LibXML' => '1.62';
 test_requires 'Test::Spec';
 
