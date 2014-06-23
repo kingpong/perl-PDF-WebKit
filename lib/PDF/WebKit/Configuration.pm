@@ -1,7 +1,8 @@
 package PDF::WebKit::Configuration;
 use strict;
 use warnings;
-use Moose;
+use Moo;
+use namespace::clean;
 
 has meta_tag_prefix => ( is => 'rw' );
 has default_options => ( is => 'rw' );
@@ -35,9 +36,6 @@ sub _find_wkhtmltopdf {
     return undef;
   }
 }
-
-no Moose;
-__PACKAGE__->meta->make_immutable;
 
 my $_config;
 sub configuration {

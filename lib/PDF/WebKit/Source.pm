@@ -2,7 +2,8 @@ package PDF::WebKit::Source;
 use strict;
 use warnings;
 
-use Moose;
+use Moo;
+use namespace::clean;
 
 has string => ( is => 'rw' );
 
@@ -36,9 +37,6 @@ sub content {
   my $self = shift;
   return ref($self->string) ? ${$self->string} : $self->string;
 }
-
-no Moose;
-__PACKAGE__->meta->make_immutable;
 
 1;
 

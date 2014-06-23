@@ -23,7 +23,7 @@ DEPENDENCIES
 This module requires these other modules and libraries:
 
   * IPC::Run
-  * Moose
+  * Moo
   * XML::LibXML 1.62 (recommended)
 
 To run the tests, you'll need:
