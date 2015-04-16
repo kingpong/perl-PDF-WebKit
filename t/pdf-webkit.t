@@ -97,6 +97,14 @@ describe "PDF::WebKit" => sub {
       is( index_of('--disable-smart-shrinking',@command), undef );
     };
 
+    it "should accept parameters with no arguments as /yes/i" => sub {
+      my $pdfkit = PDF::WebKit->new(\'html', no_collate => 'YeS');
+      my @command = $pdfkit->command;
+      like( $command[0], qr/\Q$wkhtmltopdf/ );
+      # no extra parameter between no-collate and our boilerplate
+      like( $command[index_of('--no-collate',@command) + 1], qr/^-/ );
+    };
+
     it "should encapsulate string arguments in quotes" => sub {
       my $pdfkit = PDF::WebKit->new(\'html', header_center => "foo [page]");
       my @command = $pdfkit->command;

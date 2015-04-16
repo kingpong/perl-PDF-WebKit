@@ -189,7 +189,7 @@ sub _prepare_options {
   my @args;
   while (my ($name,$val) = each %$options) {
     next unless defined($val) && length($val);
-    if ($val eq 'yes' || $val eq 'YES') {
+    if (lc($val) eq 'yes') {
       push @args, $name;
     }
     else {
@@ -291,8 +291,8 @@ Otherwise, the parameter is interpreted as a filename.
 
 The %OPTIONS hash is a list of name/value pairs for command-line
 options to wkhtmltopdf. These options can augment or override the
-default options. For options with no associated value, pass C<undef> as
-the value.
+default options. For options with no associated value, pass "YES" (case
+insensitive) as the value, e.g. C<grayscale =E<gt> "YES">.
 
 The default options are:
 
@@ -323,7 +323,7 @@ Processes the source material and returns a PDF as a string.
 Processes the source material and creates a PDF at C<$PATH>. Returns a
 filehandle opened on C<$PATH>.
 
-back
+=back
 
 =head1 SEE ALSO
 
