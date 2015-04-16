@@ -1,5 +1,9 @@
 Revision history for Perl extension PDF::WebKit.
 
+1.0   Thu Apr 16 12:48:00 2015
+  - Bumping to version 1.0 after only 4 stable years.
+  - Documentation fix (issue #2)
+
 0.9   Thu May 26 23:22:00 2011
   - Fixed bug that randomly prevented user or meta options from
     overriding the defaults, based on hashing (non)order.
