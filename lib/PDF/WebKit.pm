@@ -42,7 +42,7 @@ sub BUILD {
     $self->_normalize_options($self->_find_options_in_meta),
   });
 
-  if (not -e $self->configuration->wkhtmltopdf) {
+  if (not -x $self->configuration->wkhtmltopdf) {
     my $msg = "No wkhtmltopdf executable found\n";
     $msg   .= ">> Please install wkhtmltopdf - https://github.com/jdpace/PDFKit/wiki/Installing-WKHTMLTOPDF";
     die $msg;
