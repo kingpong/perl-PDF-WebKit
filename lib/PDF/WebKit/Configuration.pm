@@ -27,7 +27,8 @@ around 'BUILDARGS' => sub {
 
 sub _find_wkhtmltopdf {
   my $self = shift;
-  my $found = `which wkhtmltopdf`;
+  my $which = $^O eq "MSWin32" ? "where" : "which";
+  my $found = `$which wkhtmltopdf`;
   if ($? == 0) {
     chomp($found);
     return $found;
