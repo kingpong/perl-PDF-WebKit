@@ -9,7 +9,8 @@ use File::Spec;
 BEGIN { require File::Spec->catfile(dirname(__FILE__), "spec_helper.pl") }
 
 # has to exist
-my $wkhtmltopdf = File::Spec->catfile($SPEC_ROOT,'fixtures','mock_wkhtmltopdf');
+my $ext = $^O eq "MSWin32" ? ".bat" : "";
+my $wkhtmltopdf = File::Spec->catfile($SPEC_ROOT,'fixtures',"mock_wkhtmltopdf$ext");
 
 describe "PDF::WebKit" => sub {
 

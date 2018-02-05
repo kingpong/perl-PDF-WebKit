@@ -85,7 +85,7 @@ describe "PDF::WebKit" => sub {
 
     it "should not allow shell injection in options" => sub {
       my $pdfkit = PDF::WebKit->new(\'html', header_center => "a title\"; touch $test_path #");
-      $pdfkit->to_pdf;
+      eval { $pdfkit->to_pdf }; # wkhtmltopdf itself errors out on windows
       ok(! -e $test_path);
     };
   };
