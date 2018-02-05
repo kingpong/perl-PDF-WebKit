@@ -1,5 +1,8 @@
 Revision history for Perl extension PDF::WebKit.
 
+1.1   Sun Feb 04 21:41:00 2018
+  - Incorporate Win32 fixes from @wchristian
+
 1.0   Thu Apr 16 12:48:00 2015
   - Bumping to version 1.0 after only 4 stable years.
   - Documentation fix (issue #2)
