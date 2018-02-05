@@ -9,7 +9,7 @@ use IPC::Run ();
 use PDF::WebKit::Configuration;
 use PDF::WebKit::Source;
 
-our $VERSION = '1.0';
+our $VERSION = '1.1';
 
 use Moo;
 use namespace::clean;

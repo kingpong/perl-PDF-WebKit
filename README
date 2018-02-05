@@ -1,5 +1,16 @@
-PDF-WebKit version 0.91
+========================================================================
+SEEKING MAINTAINER
+
+I am no longer working in Perl regularly and as such I will be happy to
+put this repository in someone else's capable hands. Please send a
+message to @kingpong on Github if you are interested in taking over.
+Thanks!
+========================================================================
+
+
+PDF-WebKit version 1.1
 =======================
+
 
 Use WebKit to Generate PDFs from HTML (via wkhtmltopdf)
 
