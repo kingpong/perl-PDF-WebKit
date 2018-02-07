@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Carp ();
 use IO::File ();
-use IPC::Run ();
+use IPC::Run3 'run3';
 
 use PDF::WebKit::Configuration;
 use PDF::WebKit::Source;
@@ -97,7 +97,8 @@ sub to_pdf {
   my $input = $self->source->is_html ? $self->source->content : undef;
   my $output;
 
-  IPC::Run::run( \@args, "<", \$input, ">", \$output );
+  my %opt = map +( "binmode_std$_" => ":raw" ), "in", "out", "err";
+  run3 \@args, \$input, \$output, \my $err, \%opt;
 
   if ($path) {
     $output = do { local (@ARGV,$/) = ($path); <> };

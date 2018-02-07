@@ -1,5 +1,8 @@
 Revision history for Perl extension PDF::WebKit.
 
+  - Switch from IPC::Run to IPC::Run3 to get binmode and prevent
+    corrupted PDFs on Win32. fixes gh#5
+
 1.1   Sun Feb 04 21:41:00 2018
   - Incorporate Win32 fixes from @wchristian
 

@@ -24,7 +24,7 @@ DEPENDENCIES
 
 This module requires these other modules and libraries:
 
-  * IPC::Run
+  * IPC::Run3
   * Moo
   * XML::LibXML 1.62 (recommended)
 

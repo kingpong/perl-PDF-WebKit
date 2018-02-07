@@ -8,7 +8,7 @@ all_from 'lib/PDF/WebKit.pm';
 license 'perl';
 
 # Specific dependencies
-requires 'IPC::Run';
+requires 'IPC::Run3';
 requires 'Moo';
 requires 'namespace::clean';
 recommends 'XML::LibXML' => '1.62';
