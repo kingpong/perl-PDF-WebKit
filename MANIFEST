@@ -11,12 +11,12 @@ lib/PDF/WebKit.pm
 lib/PDF/WebKit/Configuration.pm
 lib/PDF/WebKit/Source.pm
 Makefile.PL
-MANIFEST
-META.yml
+MANIFEST			This list of files
 README
 t/fixtures/example.css
 t/fixtures/example.html
 t/fixtures/mock_wkhtmltopdf
+t/fixtures/mock_wkhtmltopdf.bat
 t/pdf-webkit-integration.t
 t/pdf-webkit-source.t
 t/pdf-webkit.t
