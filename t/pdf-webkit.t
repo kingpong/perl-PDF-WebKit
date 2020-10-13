@@ -107,7 +107,7 @@ describe "PDF::WebKit" => sub {
     };
 
     it "should accept multiple values" => sub {
-	  my $pdfkit = PDF::WebKit->new(\'html', '--custom-header' => [ 'X-Foo', 'bar bas' ] );
+      my $pdfkit = PDF::WebKit->new(\'html', '--custom-header' => [ 'X-Foo', 'bar bas' ] );
       my @command = $pdfkit->command;
       is( $command[index_of('--custom-header',@command) + 1], 'X-Foo' );
       is( $command[index_of('--custom-header',@command) + 2], 'bar bas' );
