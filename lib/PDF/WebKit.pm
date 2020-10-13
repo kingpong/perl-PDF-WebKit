@@ -194,7 +194,7 @@ sub _prepare_options {
       push @args, $name;
     }
     else {
-      push @args, $name, $val;
+      push @args, $name, (ref($val) eq 'ARRAY') ? @$val : $val;
     }
   }
   return @args;
@@ -271,6 +271,9 @@ C<< PDF::WebKit->configure >> class method:
     $_->meta_tag_prefix('my-prefix-');
 
     $_->default_options->{'--orientation'} = 'Portrait';
+
+    # Some options expects multiple values
+    $_->default_options->{'--custom-header'} = ['DNT', '1'];
   });
 
 See the L<new|/Constructor> method for the standard default options.
