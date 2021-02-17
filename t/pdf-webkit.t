@@ -106,6 +106,33 @@ describe "PDF::WebKit" => sub {
       like( $command[index_of('--no-collate',@command) + 1], qr/^-/ );
     };
 
+    it "should accept key value pairs" => sub {
+      my $pdfkit = PDF::WebKit->new(\'html', '--custom-header' => { 'X-Foo', 'bar bas' } );
+      my @command = $pdfkit->command;
+      is( $command[index_of('--custom-header',@command) + 1], 'X-Foo' );
+      is( $command[index_of('--custom-header',@command) + 2], 'bar bas' );
+    };
+
+    it "should accept multiple values" => sub {
+      my $pdfkit = PDF::WebKit->new(\'html', '--allow' => [ '/path/one', '/path/two' ] );
+      my @command = $pdfkit->command;
+      my $index = index_of('--allow',@command);
+      is( $command[$index + 1], '/path/one' );
+      $index++;
+      is( $command[index_of('--allow',@command,$index) + 1], '/path/two' );
+    };
+
+    it "should accept multiple key value pairs" => sub {
+      my $pdfkit = PDF::WebKit->new(\'html', '--cookie' => [ {'X-Foo' => 'foo'}, {'X-Bar' => 'bar'} ] );
+      my @command = $pdfkit->command;
+      my $index = index_of('--cookie',@command);
+      is( $command[$index + 1], 'X-Foo' );
+      is( $command[$index + 2], 'foo' );
+      $index++;
+      is( $command[index_of('--cookie',@command, $index) + 1], 'X-Bar' );
+      is( $command[index_of('--cookie',@command, $index) + 2], 'bar' );
+    };
+
     it "should encapsulate string arguments in quotes" => sub {
       my $pdfkit = PDF::WebKit->new(\'html', header_center => "foo [page]");
       my @command = $pdfkit->command;

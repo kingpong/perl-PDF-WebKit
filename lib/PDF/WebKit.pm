@@ -189,12 +189,21 @@ sub _prepare_options {
   my $options = $self->options;
   my @args;
   while (my ($name,$val) = each %$options) {
-    next unless defined($val) && length($val);
-    if (lc($val) eq 'yes') {
-      push @args, $name;
-    }
-    else {
-      push @args, $name, $val;
+    next unless defined($val);
+
+    my $items = (ref $val ne 'ARRAY') ? [$val]: $val;
+    foreach my $item ( @{$items} ) {
+      if ( ref $item eq 'HASH' ) {
+        push @args, $name, each %{$item};
+      }
+      elsif ( length($item) ) {
+        if (lc($item) eq 'yes') {
+          push @args, $name;
+        }
+        else {
+          push @args, $name, $item;  
+        }
+      }
     }
   }
   return @args;
@@ -271,6 +280,15 @@ C<< PDF::WebKit->configure >> class method:
     $_->meta_tag_prefix('my-prefix-');
 
     $_->default_options->{'--orientation'} = 'Portrait';
+
+    # Some options expects multiple values
+    $_->default_options->{'--allow'} = ['/path/one', '/path/one'];
+
+    # Some options expects key value pairs
+    $_->default_options->{'--custom-header'} = {'DNT' => '1'};
+
+    # Some options allow multiple key value pairs
+    $_->default_options->{'--cookie'} = [ {'X-Foo' => 'foo'}, {'X-Bar' => 'bar'} ];
   });
 
 See the L<new|/Constructor> method for the standard default options.
